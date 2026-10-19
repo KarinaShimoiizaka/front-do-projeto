@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Design system Nocturne — acento e tipografia da marca EMPREST.AI.
+   Todos os valores usados no app saem daqui; nada de cor literal no markup.
+   Referência: docs/prd.md, seções 1 a 4.
+   ========================================================================== */
+
+:root {
+  /* Ground escuro */
+  --color-bg: #161826;
+  --color-surface: #232532;
+  --color-text: #e9e9ed;
+  --color-divider: color-mix(in srgb, #e9e9ed 16%, transparent);
+  --color-neutral-900: #292b31;
+
+  /* Rampa do acento (teal da marca) */
+  --color-accent-100: #e6faf7;
+  --color-accent-200: #c2f1eb;
+  --color-accent-300: #93e3da;
+  --color-accent-400: #5fcfc4;
+  --color-accent-500: #2fb8ac;
+  --color-accent-600: #26978e;
+  --color-accent-700: #1d746d;
+  --color-accent-800: #15534e;
+  --color-accent-900: #0f3733;
+  --color-accent: var(--color-accent-500);
+
+  /* Tints do acento por transparência */
+  --accent-tint-10: rgba(47, 184, 172, 0.1);
+  --accent-tint-12: rgba(47, 184, 172, 0.12);
+  --accent-tint-22: rgba(47, 184, 172, 0.22);
+  --accent-tint-40: rgba(47, 184, 172, 0.4);
+
+  /* Situação: disponível / em dia */
+  --st-ok-fg: #5fcfc4;
+  --st-ok-bg: rgba(47, 184, 172, 0.12);
+  --st-ok-bd: rgba(47, 184, 172, 0.4);
+  /* Situação: emprestado / a vencer */
+  --st-warn-fg: #c9a25f;
+  --st-warn-bg: rgba(201, 162, 95, 0.12);
+  --st-warn-bd: rgba(201, 162, 95, 0.38);
+  /* Situação: em atraso / erro */
+  --st-late-fg: #e88b8b;
+  --st-late-bg: rgba(200, 90, 90, 0.14);
+  --st-late-bd: rgba(200, 90, 90, 0.4);
+  /* Situação: manutenção / inativo */
+  --st-off-fg: #9aa0ad;
+  --st-off-bg: rgba(154, 160, 173, 0.1);
+  --st-off-bd: rgba(154, 160, 173, 0.3);
+  /* Banner de bloqueio por atraso */
+  --banner-bd: #7a3b3b;
+  --banner-bg: rgba(122, 59, 59, 0.14);
+  --banner-fg: #e88b8b;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 2px rgba(10, 11, 18, 0.4);
+  --shadow-md: 0 4px 14px rgba(10, 11, 18, 0.45);
+  --shadow-lg: 0 18px 48px rgba(10, 11, 18, 0.55);
+}
+
+@layer base {
+  html,
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* --- botões ------------------------------------------------------------ */
+  .btn {
+    @apply inline-flex h-9 cursor-pointer items-center justify-center gap-2
+      rounded-md border px-3 text-[13.5px] font-medium transition-colors;
+    background: transparent;
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed;
+    opacity: 0.45;
+  }
+  .btn-primary {
+    border-color: var(--accent-tint-40);
+    color: var(--color-accent-300);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--accent-tint-12);
+    border-color: var(--color-accent);
+  }
+  .btn-primary:active:not(:disabled) {
+    background: var(--accent-tint-22);
+  }
+  .btn-secondary {
+    border-color: var(--color-divider);
+    color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    color: var(--color-text);
+    border-color: color-mix(in srgb, var(--color-text) 30%, transparent);
+  }
+  .btn-ghost {
+    border-color: transparent;
+    color: var(--color-accent-300);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--accent-tint-10);
+  }
+  .btn-block {
+    @apply w-full;
+  }
+
+  /* --- superfícies ------------------------------------------------------- */
+  .card {
+    @apply flex flex-col gap-3 rounded-lg border p-[18px];
+    background: var(--color-surface);
+    border-color: var(--color-divider);
+  }
+  .card-kicker {
+    @apply text-[11px] uppercase;
+    letter-spacing: 0.09em;
+    color: color-mix(in srgb, var(--color-text) 45%, transparent);
+  }
+  .card-title {
+    @apply text-[16.5px] font-semibold;
+    font-family: var(--font-heading);
+    letter-spacing: -0.015em;
+  }
+  .elev-sm {
+    box-shadow: var(--shadow-sm);
+  }
+  .elev-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* --- etiquetas e pills ------------------------------------------------- */
+  .tag-outline {
+    @apply inline-flex items-center rounded-[999px] border px-[9px] py-[3px]
+      text-[11.5px] uppercase;
+    letter-spacing: 0.08em;
+    border-color: var(--color-divider);
+    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  }
+  .pill {
+    @apply inline-flex shrink-0 items-center rounded-[999px] border
+      px-[9px] py-[3px] text-[12px] font-medium;
+  }
+
+  /* --- campos ------------------------------------------------------------ */
+  .input {
+    @apply h-9 rounded-md border px-[10px] py-[6px] text-[13.5px] outline-none
+      transition-colors;
+    background: var(--color-surface);
+    border-color: var(--color-divider);
+    color: var(--color-text);
+  }
+  .input::placeholder {
+    color: color-mix(in srgb, var(--color-text) 40%, transparent);
+  }
+  .input:focus {
+    border-color: var(--color-accent);
+  }
+
+  /* --- navegação --------------------------------------------------------- */
+  .nav {
+    @apply sticky top-0 z-20 flex h-[60px] items-center gap-8 border-b px-10;
+    background: var(--color-bg);
+    border-color: var(--color-divider);
+  }
+  .nav-tab {
+    @apply flex h-[60px] items-center border-b-2 border-transparent px-[14px]
+      text-[13.5px] transition-colors;
+    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  }
+  .nav-tab:hover {
+    color: color-mix(in srgb, var(--color-text) 80%, transparent);
+  }
+  .nav-tab[data-active="true"] {
+    border-bottom-color: var(--color-accent);
+    color: var(--color-text);
+  }
+
+  /* --- sobreposições ----------------------------------------------------- */
+  .dialog-backdrop {
+    @apply fixed inset-0 z-40 flex items-center justify-center;
+    background: rgba(10, 11, 18, 0.68);
+  }
+  .dialog {
+    @apply w-[420px] rounded-lg border p-[26px];
+    background: var(--color-surface);
+    border-color: var(--color-divider);
+  }
+
+  /* Régua que desaparece nas pontas. */
+  .rule {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-divider) 48px,
+      var(--color-divider) calc(100% - 48px),
+      transparent
+    );
+  }
+}
