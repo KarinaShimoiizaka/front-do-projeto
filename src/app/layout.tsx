@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         } as React.CSSProperties
       }
     >
-      <body className="min-h-[820px]">{children}</body>
+      <body className="min-h-dvh">{children}</body>
     </html>
   );
 }

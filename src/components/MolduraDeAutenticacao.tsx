@@ -6,12 +6,18 @@ const ESTATISTICAS = [
   { numero: "0", texto: "linhas para preencher" },
 ];
 
-/** Coluna esquerda da tela de entrada, conforme o PRD §5.1. */
+/**
+ * Coluna esquerda da tela de entrada, conforme o PRD §5.1.
+ *
+ * A tela ocupa exatamente a altura da janela e não rola — diverge de
+ * propósito da altura mínima de 820px do PRD. Abaixo de `lg` as duas colunas
+ * empilhadas não caberiam, então só o formulário aparece.
+ */
 export function MolduraDeAutenticacao({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid min-h-[820px] grid-cols-1 lg:grid-cols-[1.05fr_0.95fr]">
+    <div className="grid h-dvh grid-cols-1 overflow-hidden lg:grid-cols-[1.05fr_0.95fr]">
       <section
-        className="relative overflow-hidden px-14 py-16"
+        className="relative hidden overflow-hidden px-14 py-16 lg:block"
         style={{ background: "linear-gradient(160deg,#1b1f2e,#161826 60%)" }}
       >
         <div
@@ -58,8 +64,8 @@ export function MolduraDeAutenticacao({ children }: { children: React.ReactNode 
         </div>
       </section>
 
-      <section className="flex items-center justify-center px-14 py-16">
-        <div className="w-[340px]">{children}</div>
+      <section className="flex items-center justify-center px-6 py-8 sm:px-14">
+        <div className="w-full max-w-[340px]">{children}</div>
       </section>
     </div>
   );
