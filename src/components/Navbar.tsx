@@ -9,14 +9,14 @@ import { clienteDoNavegador } from "@/lib/supabase/cliente-navegador";
 
 /**
  * Barra de topo. As abas saem do papel da pessoa (FE-03 §6): Colaborador vê
- * duas, Operações vê quatro. Só o Catálogo tem tela construída; as demais
- * ficam inertes em vez de levar a um 404.
+ * duas, Operações vê quatro. Catálogo e Meus empréstimos têm tela (FE-04);
+ * Operações e Equipamentos ficam inertes em vez de levar a um 404.
  */
 const ABAS = [
-  { chave: "catalogo", rotulo: "Catálogo", pronta: true, soOperacoes: false },
-  { chave: "meus", rotulo: "Meus empréstimos", pronta: false, soOperacoes: false },
-  { chave: "operacoes", rotulo: "Operações", pronta: false, soOperacoes: true },
-  { chave: "equipamentos", rotulo: "Equipamentos", pronta: false, soOperacoes: true },
+  { chave: "catalogo", rotulo: "Catálogo", rota: "/", pronta: true, soOperacoes: false },
+  { chave: "meus", rotulo: "Meus empréstimos", rota: "/meus-emprestimos", pronta: true, soOperacoes: false },
+  { chave: "operacoes", rotulo: "Operações", rota: "/operacoes", pronta: false, soOperacoes: true },
+  { chave: "equipamentos", rotulo: "Equipamentos", rota: "/equipamentos", pronta: false, soOperacoes: true },
 ] as const;
 
 const NOME_DO_PAPEL = {
@@ -56,6 +56,7 @@ export function Navbar({
             type="button"
             className="nav-tab"
             data-active={aba.chave === abaAtiva}
+            onClick={aba.pronta && aba.chave !== abaAtiva ? () => router.push(aba.rota) : undefined}
             disabled={!aba.pronta}
             title={aba.pronta ? undefined : "Tela ainda não construída"}
             style={aba.pronta ? undefined : { opacity: 0.45, cursor: "not-allowed" }}

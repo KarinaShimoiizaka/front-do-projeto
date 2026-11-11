@@ -1,8 +1,8 @@
 import { Marca } from "./Marca";
 
 const ESTATISTICAS = [
-  { numero: "3", texto: "itens por pessoa" },
-  { numero: "14", texto: "dias de prazo" },
+  { numero: "5", texto: "itens por pessoa" },
+  { numero: "14", texto: "dias úteis de prazo" },
   { numero: "0", texto: "linhas para preencher" },
 ];
 

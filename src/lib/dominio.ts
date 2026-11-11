@@ -1,28 +1,57 @@
-import type { Emprestimo, Equipamento, EstadoPrazo, Filtro } from "./tipos";
+import type {
+  Categoria,
+  Equipamento,
+  EquipamentoDaApi,
+  EstadoPrazo,
+  Filtro,
+  MeuEmprestimo,
+  MeuEmprestimoDaApi,
+} from "./tipos";
 
-/** Regras de negócio da v1 (PRD, seção 7). */
-export const LIMITE_POR_PESSOA = 3;
-export const PRAZO_EM_DIAS = 14;
+/** Regras de negócio da v1 (PRD §7, alterado em 11/11/2026). */
+export const LIMITE_POR_PESSOA = 5;
+export const PRAZO_EM_DIAS_UTEIS = 14;
 
 /** Dias a partir dos quais o prazo passa a ser sinalizado como "a vencer". */
 const JANELA_A_VENCER = 3;
 
 const DIA_EM_MS = 86_400_000;
+const FUSO = "America/Sao_Paulo";
+
+/** O dia de `agora` em São Paulo, como `AAAA-MM-DD` (BE-04 §4). */
+export function hojeEmSaoPaulo(agora: Date): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: FUSO,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(agora);
+}
 
 export function formatarData(iso: string): string {
   const [ano, mes, dia] = iso.split("-");
   return `${dia}/${mes}/${ano}`;
 }
 
-export function somarDias(iso: string, dias: number): string {
-  const data = new Date(`${iso}T00:00:00`);
-  data.setDate(data.getDate() + dias);
+/**
+ * Soma dias úteis (segunda a sexta), contando a partir do dia seguinte. É a
+ * mesma regra da BE-04 §4; feriados não contam na v1. O servidor é quem
+ * decide a data de verdade; aqui é para mostrar no modal antes de confirmar.
+ */
+export function somarDiasUteis(iso: string, dias: number): string {
+  const data = new Date(`${iso}T12:00:00Z`);
+  let contados = 0;
+  while (contados < dias) {
+    data.setUTCDate(data.getUTCDate() + 1);
+    const diaDaSemana = data.getUTCDay();
+    if (diaDaSemana !== 0 && diaDaSemana !== 6) contados++;
+  }
   return data.toISOString().slice(0, 10);
 }
 
 export function diasRestantes(devolverAte: string, hoje: string): number {
-  const alvo = new Date(`${devolverAte}T00:00:00`).getTime();
-  const base = new Date(`${hoje}T00:00:00`).getTime();
+  const alvo = new Date(`${devolverAte}T00:00:00Z`).getTime();
+  const base = new Date(`${hoje}T00:00:00Z`).getTime();
   return Math.round((alvo - base) / DIA_EM_MS);
 }
 
@@ -33,31 +62,14 @@ export function estadoDoPrazo(devolverAte: string, hoje: string): EstadoPrazo {
   return "em-dia";
 }
 
-export function emprestimosDe(emprestimos: Emprestimo[], pessoa: string): Emprestimo[] {
-  return emprestimos.filter((e) => e.pessoa === pessoa);
-}
-
 /** Regra 5: qualquer item em atraso bloqueia novos empréstimos da pessoa. */
-export function emprestimoEmAtraso(
-  emprestimos: Emprestimo[],
-  pessoa: string,
-  hoje: string,
-): Emprestimo | undefined {
-  return emprestimosDe(emprestimos, pessoa).find(
-    (e) => estadoDoPrazo(e.devolverAte, hoje) === "atrasado",
-  );
+export function emprestimoEmAtraso(meus: MeuEmprestimo[], hoje: string): MeuEmprestimo | undefined {
+  return meus.find((e) => estadoDoPrazo(e.devolverAte, hoje) === "atrasado");
 }
 
-/** Regra 4: com 3 empréstimos ativos, não se solicita mais nada. */
-export function atingiuLimite(emprestimos: Emprestimo[], pessoa: string): boolean {
-  return emprestimosDe(emprestimos, pessoa).length >= LIMITE_POR_PESSOA;
-}
-
-export function emprestimoDoEquipamento(
-  emprestimos: Emprestimo[],
-  equipamentoId: string,
-): Emprestimo | undefined {
-  return emprestimos.find((e) => e.equipamentoId === equipamentoId);
+/** Regra 4: com 5 empréstimos ativos, não se solicita mais nada. */
+export function atingiuLimite(meus: MeuEmprestimo[]): boolean {
+  return meus.length >= LIMITE_POR_PESSOA;
 }
 
 /** Regra 6: manutenção nunca conta como disponível. */
@@ -96,50 +108,61 @@ export type AcaoDoCard = {
 };
 
 /**
- * Rótulo e habilitação do botão de cada card, derivados no render.
- * A ordem das verificações é a das regras 5 a 7 do PRD: atraso bloqueia
- * antes de tudo, manutenção nunca é solicitável, e a posse do item vence o
- * limite de 3 (não faz sentido dizer "limite" num item que já é seu).
+ * Rótulo e habilitação do botão de cada card, derivados no render, na ordem
+ * da FE-02 §5.1: manutenção nunca é solicitável, a posse do item vence o
+ * atraso e o limite (não faz sentido dizer "limite" num item que já é seu).
  */
-export function acaoDoCard(
-  equipamento: Equipamento,
-  emprestimos: Emprestimo[],
-  pessoa: string,
-  hoje: string,
-): AcaoDoCard {
+export function acaoDoCard(equipamento: Equipamento, meus: MeuEmprestimo[], hoje: string): AcaoDoCard {
   if (equipamento.situacao === "manutencao") {
     return { rotulo: "Indisponível", habilitado: false, variante: "secondary" };
   }
 
-  const emprestimo = emprestimoDoEquipamento(emprestimos, equipamento.id);
-  if (emprestimo) {
-    return emprestimo.pessoa === pessoa
+  if (equipamento.situacao === "emprestado") {
+    return equipamento.emprestimo?.comVoce
       ? { rotulo: "Está com você", habilitado: false, variante: "secondary" }
       : { rotulo: "Emprestado", habilitado: false, variante: "secondary" };
   }
 
-  if (emprestimoEmAtraso(emprestimos, pessoa, hoje)) {
+  if (emprestimoEmAtraso(meus, hoje)) {
     return { rotulo: "Bloqueado por atraso", habilitado: false, variante: "secondary" };
   }
 
-  if (atingiuLimite(emprestimos, pessoa)) {
-    return { rotulo: "Limite de 3 itens", habilitado: false, variante: "secondary" };
+  if (atingiuLimite(meus)) {
+    return { rotulo: `Limite de ${LIMITE_POR_PESSOA} itens`, habilitado: false, variante: "secondary" };
   }
 
   return { rotulo: "Solicitar empréstimo", habilitado: true, variante: "primary" };
 }
 
 /** Linha de detalhe do card (min-height 18px no layout). */
-export function detalheDoCard(
-  equipamento: Equipamento,
-  emprestimos: Emprestimo[],
-): string {
+export function detalheDoCard(equipamento: Equipamento): string {
   if (equipamento.situacao === "manutencao") {
     return equipamento.observacao ?? "Em manutenção";
   }
-  const emprestimo = emprestimoDoEquipamento(emprestimos, equipamento.id);
-  if (emprestimo) {
-    return `Com ${emprestimo.pessoa} · devolver até ${formatarData(emprestimo.devolverAte)}`;
+  if (equipamento.emprestimo) {
+    return `Com ${equipamento.emprestimo.pessoa} · devolver até ${formatarData(equipamento.emprestimo.devolverAte)}`;
   }
   return "Pronto para retirada no balcão";
+}
+
+// --- Da API para a tela -------------------------------------------------
+
+const CATEGORIAS: Record<string, Categoria> = {
+  notebook: "Notebook",
+  monitor: "Monitor",
+  cabo: "Cabo",
+  camera: "Câmera",
+  acessorio: "Acessório",
+};
+
+export function categoriaDaApi(categoria: string): Categoria {
+  return CATEGORIAS[categoria] ?? "Acessório";
+}
+
+export function equipamentoDaApi(e: EquipamentoDaApi): Equipamento {
+  return { ...e, categoria: categoriaDaApi(e.categoria) };
+}
+
+export function meuEmprestimoDaApi(m: MeuEmprestimoDaApi): MeuEmprestimo {
+  return { ...m, equipamento: { ...m.equipamento, categoria: categoriaDaApi(m.equipamento.categoria) } };
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+
+import { LIMITE_POR_PESSOA } from "@/lib/dominio";
 import type { Equipamento } from "@/lib/tipos";
 
 /**
@@ -12,11 +14,14 @@ export function ModalSolicitar({
   devolverAte,
   aoConfirmar,
   aoCancelar,
+  enviando = false,
 }: {
   equipamento: Equipamento;
   devolverAte: string;
   aoConfirmar: () => void;
   aoCancelar: () => void;
+  /** Esperando o servidor: sem atualização otimista (FE-01 §6). */
+  enviando?: boolean;
 }) {
   useEffect(() => {
     const aoTeclar = (evento: KeyboardEvent) => {
@@ -44,7 +49,7 @@ export function ModalSolicitar({
           className="mt-3 text-[13.5px]"
           style={{ color: "color-mix(in srgb, var(--color-text) 62%, transparent)" }}
         >
-          O item sai do catálogo e passa a contar no seu limite de 3 itens.
+          O item sai do catálogo e passa a contar no seu limite de {LIMITE_POR_PESSOA} itens.
         </p>
 
         <div
@@ -56,11 +61,11 @@ export function ModalSolicitar({
         </div>
 
         <div className="mt-[22px] flex justify-end gap-2">
-          <button type="button" className="btn btn-secondary" onClick={aoCancelar}>
+          <button type="button" className="btn btn-secondary" onClick={aoCancelar} disabled={enviando}>
             Cancelar
           </button>
-          <button type="button" className="btn btn-primary" onClick={aoConfirmar}>
-            Confirmar empréstimo
+          <button type="button" className="btn btn-primary" onClick={aoConfirmar} disabled={enviando}>
+            {enviando ? "Solicitando…" : "Confirmar empréstimo"}
           </button>
         </div>
       </div>

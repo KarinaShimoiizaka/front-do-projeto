@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { formatarData } from "@/lib/dominio";
 
 /** Regra 5: banner vermelho no topo do catálogo, com atalho para o pendente. */
@@ -21,9 +23,9 @@ export function BannerAtraso({
         Você tem um item em atraso: <strong>{item}</strong>, com prazo vencido em{" "}
         {formatarData(devolverAte)}. Novos empréstimos ficam bloqueados até a devolução.
       </span>
-      <button type="button" className="btn btn-ghost ml-auto shrink-0">
+      <Link href="/meus-emprestimos" className="btn btn-ghost ml-auto shrink-0">
         Ver em Meus empréstimos →
-      </button>
+      </Link>
     </div>
   );
 }

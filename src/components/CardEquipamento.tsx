@@ -17,6 +17,19 @@ export function CardEquipamento({
 }) {
   return (
     <article className="card animate-fadeUp elev-sm">
+      {equipamento.imagemUrl && (
+        // Foto já vem em 800×600 do Storage (skill imagens-equipamentos);
+        // sem crédito nem rodapé no catálogo (FE-04 §3).
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={equipamento.imagemUrl}
+          alt={equipamento.nome}
+          width={800}
+          height={600}
+          loading="lazy"
+          className="aspect-[4/3] w-full rounded-md object-cover"
+        />
+      )}
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <p className="card-kicker">{equipamento.categoria}</p>
