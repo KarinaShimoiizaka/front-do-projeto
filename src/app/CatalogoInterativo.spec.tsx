@@ -44,6 +44,10 @@ async function abrirEConfirmar() {
 
 describe("FE-04 solicitar no catálogo", () => {
   it("FE-04 CA-5: confirmar chama POST /emprestimos; com sucesso o card vira Está com você e o toast traz a data do servidor", async () => {
+    // O servidor devolve uma data DIFERENTE da que o front calcula para o
+    // modal (27/11). Assim o teste prova que o toast mostra a do servidor,
+    // e não a calculada localmente (achado da rodada 1 do verificador).
+    const DO_SERVIDOR = "2026-11-30";
     let emprestado = false;
     let liberar!: (valor: Awaited<ReturnType<ApiDoEmprestai["solicitar"]>>) => void;
     const api: ApiDoEmprestai = {
@@ -51,11 +55,11 @@ describe("FE-04 solicitar no catálogo", () => {
         emprestado
           ? equipamento({
               situacao: "emprestado",
-              emprestimo: { pessoa: "Ana Ribeiro", devolverAte: "2026-11-27", comVoce: true },
+              emprestimo: { pessoa: "Ana Ribeiro", devolverAte: DO_SERVIDOR, comVoce: true },
             })
           : equipamento(),
       ]),
-      meusEmprestimos: jest.fn(async () => (emprestado ? [MEU] : [])),
+      meusEmprestimos: jest.fn(async () => (emprestado ? [{ ...MEU, devolverAte: DO_SERVIDOR }] : [])),
       solicitar: jest.fn(() => new Promise((resolver) => (liberar = resolver))),
     };
 
@@ -71,10 +75,12 @@ describe("FE-04 solicitar no catálogo", () => {
     expect(screen.getByRole("button", { name: "Solicitar empréstimo" })).toBeInTheDocument();
 
     emprestado = true;
-    liberar({ id: "e1", equipamentoId: "q1", retiradaEm: "2026-11-09", devolverAte: "2026-11-27" });
+    liberar({ id: "e1", equipamentoId: "q1", retiradaEm: "2026-11-09", devolverAte: DO_SERVIDOR });
 
     expect(await screen.findByRole("button", { name: "Está com você" })).toBeDisabled();
-    expect(screen.getByRole("status")).toHaveTextContent("Notebook 14 polegadas é seu até 27/11/2026");
+    const toast = screen.getByRole("status");
+    expect(toast).toHaveTextContent("Notebook 14 polegadas é seu até 30/11/2026");
+    expect(toast).not.toHaveTextContent("27/11/2026");
   });
 
   it("FE-04 CA-6: quando o servidor recusa, a mensagem dele aparece e o card não muda", async () => {
