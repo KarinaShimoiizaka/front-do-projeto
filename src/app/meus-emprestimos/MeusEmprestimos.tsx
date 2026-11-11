@@ -135,50 +135,56 @@ function Tracos({ meus, hoje }: { meus: MeuEmprestimo[]; hoje: string }) {
   );
 }
 
+/**
+ * Uma linha do PRD §5.3: colunas de flex na proporção item 1.4 · Retirada 1
+ * · Devolver até 1 · pill 0.9, padding 18px 20px e gap de 20px. A `.card`
+ * empilha em coluna; aqui a direção é trocada para linha. Em tela estreita,
+ * o item ocupa a primeira linha e as outras colunas quebram abaixo.
+ */
 function LinhaDeEmprestimo({ emprestimo, hoje }: { emprestimo: MeuEmprestimo; hoje: string }) {
   const estado = COR_DO_ESTADO[estadoDoPrazo(emprestimo.devolverAte, hoje)];
   return (
     <li
-      className="card flex flex-wrap items-center gap-5 px-5 py-[18px]"
+      className="card flex-row flex-wrap items-center gap-5 px-5 py-[18px] md:flex-nowrap"
       style={{ borderLeft: `3px solid ${estado.fg}` }}
     >
-      <div className="flex min-w-0 flex-[1.4] items-center gap-3">
+      <div className="flex min-w-0 basis-full items-center gap-4 md:basis-0 md:flex-[1.4]">
         {emprestimo.equipamento.imagemUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={emprestimo.equipamento.imagemUrl}
             alt=""
-            width={64}
-            height={48}
-            className="h-12 w-16 shrink-0 rounded-sm object-cover"
+            width={96}
+            height={72}
+            className="h-[72px] w-24 shrink-0 rounded-md object-cover"
           />
         )}
         <div className="min-w-0">
-          <p className="truncate text-[14.5px] font-medium">{emprestimo.equipamento.nome}</p>
-          <p className="text-[12px]" style={TEXTO_APAGADO}>
+          <p className="card-kicker">{emprestimo.equipamento.categoria}</p>
+          <p className="mt-[2px] truncate text-[15px] font-medium">{emprestimo.equipamento.nome}</p>
+          <p className="mt-[2px] text-[12px]" style={TEXTO_APAGADO}>
             {emprestimo.equipamento.patrimonio}
           </p>
         </div>
       </div>
       <Coluna rotulo="Retirada" valor={formatarData(emprestimo.retiradaEm)} />
       <Coluna rotulo="Devolver até" valor={formatarData(emprestimo.devolverAte)} cor={estado.fg} />
-      <span
-        className="pill flex-[0.9] justify-self-start"
-        style={{ color: estado.fg, background: estado.bg, borderColor: estado.bd }}
-      >
-        {estado.rotulo}
-      </span>
+      <div className="flex flex-[0.9] justify-end">
+        <span className="pill" style={{ color: estado.fg, background: estado.bg, borderColor: estado.bd }}>
+          {estado.rotulo}
+        </span>
+      </div>
     </li>
   );
 }
 
 function Coluna({ rotulo, valor, cor }: { rotulo: string; valor: string; cor?: string }) {
   return (
-    <div className="flex-1">
+    <div className="min-w-[110px] flex-1">
       <p className="text-[11px] uppercase tracking-wide" style={TEXTO_APAGADO}>
         {rotulo}
       </p>
-      <p className="text-[13.5px]" style={cor ? { color: cor } : undefined}>
+      <p className="mt-[2px] text-[14px]" style={cor ? { color: cor } : undefined}>
         {valor}
       </p>
     </div>
