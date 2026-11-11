@@ -87,7 +87,7 @@ ordem de avaliação importa e é esta:
 | 2 | emprestado para o próprio usuário | `Está com você` | não | secondary |
 | 3 | emprestado para outra pessoa | `Emprestado` | não | secondary |
 | 4 | usuário tem algum item em atraso | `Bloqueado por atraso` | não | secondary |
-| 5 | usuário tem 3 empréstimos ativos | `Limite de 3 itens` | não | secondary |
+| 5 | usuário tem 5 empréstimos ativos | `Limite de 5 itens` | não | secondary |
 | 6 | nenhuma das anteriores | `Solicitar empréstimo` | sim | primary |
 
 **Por que a ordem é essa:** a posse do item precisa vencer o limite e o
@@ -160,9 +160,9 @@ encerrados · foto do equipamento.
    "4 de 9 equipamentos disponíveis agora".
 2. Um item em manutenção mostra pill cinza, a observação na linha de detalhe
    e botão `Indisponível` desabilitado.
-3. Com 3 empréstimos ativos e nenhum atraso, todo card disponível mostra
-   `Limite de 3 itens`, e o card que está com o usuário mostra
-   `Está com você`.
+3. Com 5 empréstimos ativos e nenhum atraso, todo card disponível mostra
+   `Limite de 5 itens`, e o card que está com o usuário mostra
+   `Está com você`. (Era 3 até a alteração do PRD em 11/11/2026; ver FE-04.)
 4. Com um item em atraso, o banner aparece e todos os cards disponíveis
    mostram `Bloqueado por atraso`.
 5. Buscar `TI-0142` deixa exatamente um card; buscar `ti-0142` faz o mesmo.
