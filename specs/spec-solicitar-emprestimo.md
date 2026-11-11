@@ -1,6 +1,7 @@
 # FE-04 — Solicitar empréstimo e Meus empréstimos
 
-**Status:** aprovada (11/11/2026).
+**Status:** pronta. Aprovada em 11/11/2026; veredito `PRONTA` do
+verificador-spec na rodada 2 (`docs/verificacoes/`, no repositório da raiz).
 
 **Contexto:** briefing "solicitar empréstimo" da prática; [PRD](../../docs/prd.md)
 §5.1, §5.2, §5.3 e §7 (alterado em 11/11/2026: limite de 5 itens, prazo de 14
