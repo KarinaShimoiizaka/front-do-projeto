@@ -1,11 +1,12 @@
 # FE-01 — Frontend
 
-**Status:** parcialmente implementado. Existe o projeto Next.js e a tela do
-Catálogo, rodando com dados em memória. As outras quatro telas e toda a
-conversa com o backend não existem.
+**Status:** aprovada. Parcialmente implementada: existem o projeto Next.js,
+o Catálogo (rodando com dados em memória) e o login ([FE-03](spec-login.md)).
+Meus empréstimos, Operações, Equipamentos e a conversa com o backend não
+existem.
 
-**Contexto:** [ADR-001](../../../docs/adrs/adr-001-stack.md) (Next.js + Tailwind),
-[PRD](../../../docs/prd.md) (layout completo), [FE-02](spec-catalogo.md),
+**Contexto:** [ADR-001](../../docs/adrs/adr-001-stack.md) (Next.js + Tailwind),
+[PRD](../../docs/prd.md) (layout completo), [FE-02](spec-catalogo.md),
 [FE-03](spec-login.md).
 **Lado do servidor:** [BE-01](../../backend/specs/spec-backend.md).
 

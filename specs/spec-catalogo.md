@@ -1,11 +1,11 @@
 # FE-02 — Catálogo (página inicial)
 
-**Status:** escrita depois da implementação. O código existe em
-`application/frontend/src/app/page.tsx` e hoje roda com dados em memória.
-Este documento é a fonte de verdade; onde o código divergir, o código está
-errado.
+**Status:** aprovada. Escrita depois da implementação e ainda não passou
+pelo verificador-spec. O código existe em `frontend/src/app/page.tsx` e hoje
+roda com dados em memória. Este documento é a fonte de verdade; onde o
+código divergir, o código está errado.
 
-**Contexto:** [PRD §5.2](../../../docs/prd.md) (layout), [ADR-001](../../../docs/adrs/adr-001-stack.md) (stack).
+**Contexto:** [PRD §5.2](../../docs/prd.md) (layout), [ADR-001](../../docs/adrs/adr-001-stack.md) (stack).
 **Depende de:** [FE-03](spec-login.md) e [BE-02](../../backend/specs/spec-autenticacao.md)
 para saber quem é o usuário, [BE-01](../../backend/specs/spec-backend.md) para os dados.
 

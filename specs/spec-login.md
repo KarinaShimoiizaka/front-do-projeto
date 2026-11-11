@@ -1,9 +1,10 @@
 # FE-03 — Login
 
-**Status:** implementada. O código está em `application/frontend/src/app/login/`,
+**Status:** aprovada. Implementada, mas ainda não passou pelo
+verificador-spec. O código está em `frontend/src/app/login/`,
 `src/lib/supabase/` e `src/middleware.ts`.
 
-**Contexto:** [PRD §5.1](../../../docs/prd.md) (layout do login),
+**Contexto:** [PRD §5.1](../../docs/prd.md) (layout do login),
 [FE-01](spec-frontend.md) (frontend).
 **Lado do servidor:** [BE-02](../../backend/specs/spec-autenticacao.md) —
 papéis, validação de token e provisionamento de perfil.
